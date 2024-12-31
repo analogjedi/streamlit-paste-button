@@ -29,4 +29,41 @@ button:not(:disabled) {
     top: 0;
 }
 
+.button-container {
+  display: flex;
+  gap: 8px;
+  position: relative;
+  height: 38.4px;
+}
+
+button {
+  background-color: #3498db;
+  color: #ffffff;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 400;
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.5rem;
+  min-height: 38.4px;
+  margin: 0px;
+  line-height: 1.6;
+  width: auto;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #2980b9;
+}
+
+#clear_button {
+  background-color: #e74c3c;
+}
+
+#clear_button:hover {
+  background-color: #c0392b;
+}
+
+
 
