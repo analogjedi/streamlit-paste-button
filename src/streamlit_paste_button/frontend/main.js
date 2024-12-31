@@ -2,6 +2,20 @@ function sendValue(value) {
   Streamlit.setComponentValue(value);
 }
 
+function showClearButton() {
+  const clearButton = document.getElementById('clear_button');
+  if (clearButton) {
+    clearButton.style.display = 'inline-flex';
+  }
+}
+
+function hideClearButton() {
+  const clearButton = document.getElementById('clear_button');
+  if (clearButton) {
+    clearButton.style.display = 'none';
+  }
+}
+
 async function parseClipboardData() {
   try {
     const items = await navigator.clipboard.read();
@@ -17,6 +31,7 @@ async function parseClipboardData() {
           type: 'image',
           data: base64data
         });
+        showClearButton();  // Show clear button after successful paste
       };
     } else {
       console.error('No image found in clipboard.');
@@ -38,21 +53,20 @@ function clearImage() {
   sendValue({
     type: 'clear'
   });
+  hideClearButton();  // Hide clear button after clearing
 }
 
 function onRender(event) {
     if (!window.rendered) {
         document.body.style.backgroundColor = event.detail.theme.backgroundColor;
-        const {label, text_color, background_color, hover_background_color, key} = event.detail.args;
+        const {label, text_color, background_color, hover_background_color, key, has_image} = event.detail.args;
         
-        // Create paste button
+        // Setup paste button
         const pasteButton = document.getElementById('paste_button');
         pasteButton.innerHTML = label;
         pasteButton.style.color = text_color;
         pasteButton.id = key;
         pasteButton.addEventListener('click', parseClipboardData);
-
-        // Style the paste button
         pasteButton.style.backgroundColor = background_color;
         pasteButton.addEventListener('mouseover', function() {
           pasteButton.style.backgroundColor = hover_background_color;
@@ -62,10 +76,15 @@ function onRender(event) {
         });
         pasteButton.style.fontFamily = event.detail.theme.font;
 
-        // Setup clear button functionality
+        // Setup clear button
         const clearButton = document.getElementById('clear_button');
         clearButton.addEventListener('click', clearImage);
         clearButton.style.fontFamily = event.detail.theme.font;
+        
+        // Show clear button if there's an existing image
+        if (has_image) {
+          showClearButton();
+        }
 
         window.rendered = true;
     }
