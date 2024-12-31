@@ -31,7 +31,7 @@ async function parseClipboardData() {
           type: 'image',
           data: base64data
         });
-        showClearButton();  // Show clear button after successful paste
+        showClearButton();
       };
     } else {
       console.error('No image found in clipboard.');
@@ -53,8 +53,27 @@ function clearImage() {
   sendValue({
     type: 'clear'
   });
-  hideClearButton();  // Hide clear button after clearing
+  hideClearButton();
 }
+
+// Add global keyboard event listener for Ctrl+V
+document.addEventListener('keydown', async (e) => {
+  // Check if the paste button exists in the DOM
+  const pasteButton = document.getElementById('paste_button');
+  if (!pasteButton) return;
+
+  // Check for Ctrl+V or Cmd+V (Mac)
+  if ((e.ctrlKey || e.metaKey) && e.key === 'v') {
+    // Visual feedback - briefly highlight the button
+    const originalColor = pasteButton.style.backgroundColor;
+    pasteButton.style.backgroundColor = '#2980b9';
+    setTimeout(() => {
+      pasteButton.style.backgroundColor = originalColor;
+    }, 200);
+
+    await parseClipboardData();
+  }
+});
 
 function onRender(event) {
     if (!window.rendered) {
@@ -63,7 +82,7 @@ function onRender(event) {
         
         // Setup paste button
         const pasteButton = document.getElementById('paste_button');
-        pasteButton.innerHTML = label;
+        pasteButton.innerHTML = label; //+ ' (Ctrl+V)';  // Add keyboard shortcut hint
         pasteButton.style.color = text_color;
         pasteButton.id = key;
         pasteButton.addEventListener('click', parseClipboardData);
