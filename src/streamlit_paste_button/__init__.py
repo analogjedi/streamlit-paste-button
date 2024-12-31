@@ -26,9 +26,19 @@ class PasteResult:
     ----------
     image_data: PIL.Image
         The image data.
+    action: str
+        The action type ('paste', 'clear', or None)
     """
-
     image_data: Image = None
+    action: str = None
+
+    def is_clear(self) -> bool:
+        """Check if this is a clear action"""
+        return self.action == 'clear'
+
+    def is_paste(self) -> bool:
+        """Check if this is a successful paste"""
+        return self.image_data is not None
 
 
 def _data_url_to_image(data_url: str) -> Image:
@@ -61,16 +71,15 @@ def paste_image_button(
         The background color of the button when hovered, by default "#2980b9"
     key : str, optional
         An optional string to use as the unique key for the widget. Defaults to 'paste_button'.
-    errors: str {‘raise’, ‘ignore’}, optional
-        If ‘raise’, then invalid input will raise an exception.
-        If ‘ignore’, then invalid input will return the input.
-        Default is ‘ignore’.
-
+    errors: str {'raise', 'ignore'}, optional
+        If 'raise', then invalid input will raise an exception.
+        If 'ignore', then invalid input will return the input.
+        Default is 'ignore'.
 
     Returns
     -------
-    base64_image : PasteResult
-        The image data.
+    paste_result : PasteResult
+        The image data or None if no image was pasted.
     """
     component_value = _component_func(
         label=label,
@@ -79,16 +88,42 @@ def paste_image_button(
         hover_background_color=hover_background_color,
         key=key
     )
-
+    
     if component_value is None:
         return PasteResult()
-    elif component_value.startswith('error'):
-        if errors == 'raise':
-            if component_value.startswith('error: no image'):
-                st.error('**Error**: No image found in clipboard', icon='🚨')
-            else:
-                st.error(re.sub('error: (.+)(: .+)', r'**\1**\2', component_value), icon='🚨')
-        return PasteResult()
-    return PasteResult(
-        image_data=_data_url_to_image(component_value)
-    )
+    
+    # Handle the new dictionary response structure
+    if isinstance(component_value, dict):
+        if component_value.get('type') == 'clear':
+            return PasteResult(action='clear')
+        elif component_value.get('type') == 'error':
+            if errors == 'raise':
+                error_message = component_value.get('message', 'Unknown error')
+                if 'no image found in clipboard' in error_message.lower():
+                    st.error('**Error**: No image found in clipboard', icon='🚨')
+                else:
+                    st.error(re.sub('(.+)(: .+)', r'**\1**\2', error_message), icon='🚨')
+            return PasteResult()
+        elif component_value.get('type') == 'image':
+            image_data = component_value.get('data')
+            if image_data:
+                return PasteResult(
+                    image_data=_data_url_to_image(image_data),
+                    action='paste'
+                )
+    
+    # Fallback for legacy string format
+    elif isinstance(component_value, str):
+        if component_value.startswith('error'):
+            if errors == 'raise':
+                if component_value.startswith('error: no image'):
+                    st.error('**Error**: No image found in clipboard', icon='🚨')
+                else:
+                    st.error(re.sub('error: (.+)(: .+)', r'**\1**\2', component_value), icon='🚨')
+            return PasteResult()
+        return PasteResult(
+            image_data=_data_url_to_image(component_value),
+            action='paste'
+        )
+    
+    return PasteResult()
