@@ -58,35 +58,20 @@ def paste_image_button(
 ) -> PasteResult:
     """
     Create a button that can be used to paste an image from the clipboard.
-
-    Parameters
-    ----------
-    label : str
-        The label to display next to the component.
-    text_color : str, optional
-        The color of the text, by default "#ffffff"
-    background_color : str, optional
-        The background color of the button, by default "#2980b9"
-    hover_background_color : str, optional
-        The background color of the button when hovered, by default "#2980b9"
-    key : str, optional
-        An optional string to use as the unique key for the widget. Defaults to 'paste_button'.
-    errors: str {'raise', 'ignore'}, optional
-        If 'raise', then invalid input will raise an exception.
-        If 'ignore', then invalid input will return the input.
-        Default is 'ignore'.
-
-    Returns
-    -------
-    paste_result : PasteResult
-        The image data or None if no image was pasted.
     """
+    # Check if there's already a pasted image
+    has_image = False
+    if 'session_state' in st.__dict__:
+        if 'session_image_array' in st.session_state:
+            has_image = "pasted png image file" in st.session_state['session_image_array']
+
     component_value = _component_func(
         label=label,
         text_color=text_color,
         background_color=background_color,
         hover_background_color=hover_background_color,
-        key=key
+        key=key,
+        has_image=has_image  # Pass the image state to the component
     )
     
     if component_value is None:
