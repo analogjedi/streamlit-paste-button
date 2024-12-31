@@ -1,3 +1,10 @@
+# Paste Button Component Updates
+- Added clear functionality to remove pasted images
+- Component now supports both paste and clear actions
+- Improved error handling and state management
+- Added helper methods for action type checking
+- Maintains backwards compatibility
+
 # Streamlit - Paste Button
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://paste-button.streamlit.app/)
