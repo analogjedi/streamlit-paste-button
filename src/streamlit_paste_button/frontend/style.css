@@ -1,42 +1,13 @@
-button:not(:disabled) {
-  /* Your styles here */
-  background-color: #3498db;
-  color: #ffffff;
-  border: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 400;
-  padding: 0.25rem 0.75rem;
-  padding-top: 0.25rem;
-  padding-right: 0.75rem;
-  padding-bottom: 0.25rem;
-  padding-left: 0.75rem;
-  border-radius: 0.5rem;
-  min-height: 38.4px;
-  margin: 0px;
-  line-height: 1.6;
-  width: auto;
-}
-
-button:not(:disabled):hover {
-  background-color: #2980b9;
-}
-
-button:not(:disabled) {
-    cursor: pointer;
-    position: absolute;
-    top: 0;
-}
-
 .button-container {
   display: flex;
   gap: 8px;
   position: relative;
-  height: 38.4px;
+  min-height: 38.4px;
+  width: 100%;
 }
 
 button {
+  flex: none;  /* Prevent flex stretching */
   background-color: #3498db;
   color: #ffffff;
   border: none;
@@ -49,12 +20,12 @@ button {
   min-height: 38.4px;
   margin: 0px;
   line-height: 1.6;
-  width: auto;
-  cursor: pointer;
+  position: relative;  /* Changed from absolute */
 }
 
 button:hover {
   background-color: #2980b9;
+  cursor: pointer;
 }
 
 #clear_button {
@@ -64,6 +35,3 @@ button:hover {
 #clear_button:hover {
   background-color: #c0392b;
 }
-
-
-
